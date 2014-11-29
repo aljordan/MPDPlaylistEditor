@@ -1,23 +1,33 @@
 package org.aljordan.ajmpdcontrol;
 
 import java.awt.EventQueue;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
 import javax.swing.JTabbedPane;
+
 import java.awt.GridBagConstraints;
+
 import javax.swing.JLabel;
+
 import java.awt.Insets;
+
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JList;
 import javax.swing.border.LineBorder;
+
 import java.awt.Color;
 import java.util.Collection;
 
@@ -40,14 +50,19 @@ import org.bff.javampd.objects.MPDAlbum;
 import org.bff.javampd.objects.MPDArtist;
 import org.bff.javampd.objects.MPDGenre;
 import org.bff.javampd.objects.MPDSong;
+
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.ImageIcon;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Font;
+
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
+
+import java.awt.GridLayout;
 
 public class Main extends JFrame {
 
@@ -72,7 +87,9 @@ public class Main extends JFrame {
 	private JLabel lblGenreInfo;
 	private JLabel lblRateInfo;
 	private JLabel lblSampleRateInfo;
-	private JLabel lblBitDepthInfo ;
+	private JLabel lblBitDepthInfo;
+	private JLabel lblElapsedTime;
+	private JLabel lblTotalTime;
 	private final ButtonGroup btnGrpLetterSelection = new ButtonGroup();
 	private final ButtonGroup btnGroupArtistsAlbumsSongs = new ButtonGroup();
 	private JList lstGenres;
@@ -249,8 +266,27 @@ public class Main extends JFrame {
 		rdbtnAll.doClick();
 	}
 	
+	private String convertTimeInSecondsToString(int time) {
+		String minutes;
+		String seconds;
+		if (time / 60 < 10)
+			minutes = "0" + Integer.toString(time / 60);
+		else
+			minutes = Integer.toString(time / 60);
+		if (time % 60 < 10)
+			seconds = "0" + Integer.toString(time % 60);
+		else
+			seconds = Integer.toString(time % 60);
+			
+		String totalTime = minutes + ":" + seconds;
+		return totalTime;
+		
+	}
+	
 	public void updateSongProgress(int elapsedSeconds) {
 		progbarSongTime.setValue(elapsedSeconds);
+		lblElapsedTime.setText(convertTimeInSecondsToString(elapsedSeconds));
+
 	}
 	
 	private void setUpPlaylistEditorListBox() {
@@ -364,6 +400,7 @@ public class Main extends JFrame {
 			else {
 				lblYearInfo.setText(currentSong.getYear());
 			}
+			lblTotalTime.setText(convertTimeInSecondsToString(currentSong.getLength()));
 			progbarSongTime.setMinimum(0);
 			progbarSongTime.setMaximum(currentSong.getLength());
 		} catch (MPDPlaylistException e) {
@@ -845,9 +882,9 @@ public class Main extends JFrame {
 		tabbedPaneMain.setEnabledAt(0, true);
 		GridBagLayout gbl_pnlPlayer = new GridBagLayout();
 		gbl_pnlPlayer.columnWidths = new int[]{300, 125, 0};
-		gbl_pnlPlayer.rowHeights = new int[]{16, 300, 35, 0, 11, 0};
+		gbl_pnlPlayer.rowHeights = new int[]{16, 300, 35, 0, 0, 11, 0};
 		gbl_pnlPlayer.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_pnlPlayer.rowWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_pnlPlayer.rowWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		pnlPlayer.setLayout(gbl_pnlPlayer);
 		
 		JLabel lblNowPlaying = new JLabel("Now Playing");
@@ -1184,13 +1221,33 @@ public class Main extends JFrame {
 		gbc_btnShuffle.gridy = 0;
 		pnlPlayerButtonsLower.add(btnShuffle, gbc_btnShuffle);
 		
+		JPanel pnlTimeLabels = new JPanel();
+		GridBagConstraints gbc_pnlTimeLabels = new GridBagConstraints();
+		gbc_pnlTimeLabels.insets = new Insets(0, 0, 0, 5);
+		gbc_pnlTimeLabels.fill = GridBagConstraints.HORIZONTAL;
+		gbc_pnlTimeLabels.gridx = 0;
+		gbc_pnlTimeLabels.gridy = 4;
+		pnlPlayer.add(pnlTimeLabels, gbc_pnlTimeLabels);
+		pnlTimeLabels.setLayout(new GridLayout(0, 2, 0, 0));
+		
+		lblElapsedTime = new JLabel("Elapsed");
+		lblElapsedTime.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
+		lblElapsedTime.setVerticalAlignment(SwingConstants.BOTTOM);
+		pnlTimeLabels.add(lblElapsedTime);
+		
+		lblTotalTime = new JLabel("Total");
+		lblTotalTime.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
+		lblTotalTime.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblTotalTime.setHorizontalAlignment(SwingConstants.TRAILING);
+		pnlTimeLabels.add(lblTotalTime);
+		
 		progbarSongTime = new JProgressBar();
 		progbarSongTime.setToolTipText("Click to go to location in song");
 		GridBagConstraints gbc_progbarSongTime = new GridBagConstraints();
-		gbc_progbarSongTime.fill = GridBagConstraints.HORIZONTAL;
 		gbc_progbarSongTime.insets = new Insets(0, 0, 0, 5);
+		gbc_progbarSongTime.fill = GridBagConstraints.HORIZONTAL;
 		gbc_progbarSongTime.gridx = 0;
-		gbc_progbarSongTime.gridy = 4;
+		gbc_progbarSongTime.gridy = 5;
 		pnlPlayer.add(progbarSongTime, gbc_progbarSongTime);
 		
 		JPanel pnlPlaylistEditor = new JPanel();
