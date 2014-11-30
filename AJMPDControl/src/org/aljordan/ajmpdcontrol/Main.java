@@ -33,6 +33,7 @@ import java.util.Collection;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -1245,14 +1246,45 @@ public class Main extends JFrame {
 		lblTotalTime.setHorizontalAlignment(SwingConstants.TRAILING);
 		pnlTimeLabels.add(lblTotalTime);
 		
-		progbarSongTime = new JProgressBar();
-		progbarSongTime.setToolTipText("Click to go to location in song");
+		//JProgress bar with a custom tool-tip to show where in a song
+		// clicking would scroll to.
+		progbarSongTime = new JProgressBar() {
+			private static final long serialVersionUID = 1L;
+
+			public JToolTip createToolTip() {
+				JToolTip tip = super.createToolTip();
+		        return tip;
+		    }
+			
+			public boolean contains(int x, int y) {
+				boolean isPlaying = false;
+				try {
+					PlayerStatus ps = player.getStatus();
+					if (ps == PlayerStatus.STATUS_PLAYING) 
+						isPlaying = true;
+				} catch (MPDResponseException e) {
+					e.printStackTrace();
+				} catch (MPDConnectionException e) {
+					e.printStackTrace();
+				}
+				
+				if (isPlaying) {
+					float percentage = ((float)x / (float)this.getWidth());
+					setToolTipText(convertTimeInSecondsToString((int)(progbarSongTime.getMaximum() * percentage)));
+				} else {
+					setToolTipText("Click to go to location in song");
+				}
+				return super.contains(x, y);
+			}
+		};
+		
 		GridBagConstraints gbc_progbarSongTime = new GridBagConstraints();
 		gbc_progbarSongTime.insets = new Insets(0, 0, 0, 5);
 		gbc_progbarSongTime.fill = GridBagConstraints.HORIZONTAL;
 		gbc_progbarSongTime.gridx = 0;
 		gbc_progbarSongTime.gridy = 5;
 		pnlPlayer.add(progbarSongTime, gbc_progbarSongTime);
+
 		
 		JPanel pnlPlaylistEditor = new JPanel();
 		tabbedPaneMain.addTab("Playlist Editor", null, pnlPlaylistEditor, null);

@@ -15,7 +15,7 @@ public class SongProgressMouseListener implements MouseListener {
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.out.println("X is: " + String.valueOf(e.getX()));
+//		System.out.println("X is: " + String.valueOf(e.getX()));
 		Component bar = e.getComponent();
 		
 		// get a percentage of the length of the progress bar where the
