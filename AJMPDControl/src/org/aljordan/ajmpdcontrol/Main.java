@@ -382,13 +382,20 @@ public class Main extends JFrame {
 	}
 	
 	
+	private String padRight(String s, int n) {
+	    return String.format("%1$-" + n + "s", s);
+	}
 	
 	public void hiliteCurrentSong() {
 		MPDSong currentSong;
 		try {
 			currentSong = initialMPDPlaylist.getCurrentSong();
 			lstNowPlaying.setSelectedValue(currentSong, true);
-			lblTitleInfo.setText(currentSong.getTitle());
+			// give title a minimum width in spaces so gridbag doesn't bounce around so much
+			if (currentSong.getTitle().length() < 85)
+				lblTitleInfo.setText(padRight(currentSong.getTitle(),85));
+			else
+				lblTitleInfo.setText(currentSong.getTitle());
 			lblArtistInfo.setText(currentSong.getArtist().getName());
 			lblAlbumInfo.setText(currentSong.getAlbum().getName());
 			lblGenreInfo.setText(currentSong.getGenre());
@@ -1082,8 +1089,8 @@ public class Main extends JFrame {
 		
 		JPanel pnlPlayerButtons = new JPanel();
 		GridBagConstraints gbc_pnlPlayerButtons = new GridBagConstraints();
-		gbc_pnlPlayerButtons.insets = new Insets(0, 0, 5, 5);
-		gbc_pnlPlayerButtons.fill = GridBagConstraints.BOTH;
+		gbc_pnlPlayerButtons.insets = new Insets(0, 0, 5, 0);
+		gbc_pnlPlayerButtons.fill = GridBagConstraints.VERTICAL;
 		gbc_pnlPlayerButtons.gridx = 0;
 		gbc_pnlPlayerButtons.gridy = 2;
 		pnlPlayer.add(pnlPlayerButtons, gbc_pnlPlayerButtons);
@@ -1140,15 +1147,14 @@ public class Main extends JFrame {
 		
 		JPanel pnlPlayerButtonsLower = new JPanel();
 		GridBagConstraints gbc_pnlPlayerButtonsLower = new GridBagConstraints();
-		gbc_pnlPlayerButtonsLower.fill = GridBagConstraints.HORIZONTAL;
-		gbc_pnlPlayerButtonsLower.insets = new Insets(0, 0, 5, 5);
+		gbc_pnlPlayerButtonsLower.insets = new Insets(0, 0, 5, 0);
 		gbc_pnlPlayerButtonsLower.gridx = 0;
 		gbc_pnlPlayerButtonsLower.gridy = 3;
 		pnlPlayer.add(pnlPlayerButtonsLower, gbc_pnlPlayerButtonsLower);
 		GridBagLayout gbl_pnlPlayerButtonsLower = new GridBagLayout();
 		gbl_pnlPlayerButtonsLower.columnWidths = new int[]{52, 0, 52, 0};
 		gbl_pnlPlayerButtonsLower.rowHeights = new int[]{48, 0};
-		gbl_pnlPlayerButtonsLower.columnWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_pnlPlayerButtonsLower.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gbl_pnlPlayerButtonsLower.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		pnlPlayerButtonsLower.setLayout(gbl_pnlPlayerButtonsLower);
 		
@@ -1195,7 +1201,6 @@ public class Main extends JFrame {
 		});
 		btnRepeat.setIcon(new ImageIcon(Main.class.getResource("/org/aljordan/ajmpdcontrol/img_btn_repeat_small.png")));
 		GridBagConstraints gbc_btnRepeat = new GridBagConstraints();
-		gbc_btnRepeat.fill = GridBagConstraints.VERTICAL;
 		gbc_btnRepeat.insets = new Insets(0, 0, 0, 5);
 		gbc_btnRepeat.gridx = 0;
 		gbc_btnRepeat.gridy = 0;
@@ -1216,7 +1221,6 @@ public class Main extends JFrame {
 		pnlPlayerButtonsLower.add(btnLoop, gbc_btnLoop);
 		btnShuffle.setIcon(new ImageIcon(Main.class.getResource("/org/aljordan/ajmpdcontrol/img_btn_shuffle_small.png")));
 		GridBagConstraints gbc_btnShuffle = new GridBagConstraints();
-		gbc_btnShuffle.fill = GridBagConstraints.VERTICAL;
 		gbc_btnShuffle.gridx = 2;
 		gbc_btnShuffle.gridy = 0;
 		pnlPlayerButtonsLower.add(btnShuffle, gbc_btnShuffle);
