@@ -2016,7 +2016,7 @@ public class Main extends JFrame {
 						initialMPDPlaylist.savePlaylist(playlistName);
 					    currentPlaylistName = playlistName;
 					} 
-					catch (Exception e) {
+					catch (MPDResponseException e) {
 						// does the play list already saved on the server?  
 						// If so, delete and re-save
 						if (e.getMessage().indexOf("Playlist already exists") > -1 ) {
@@ -2042,6 +2042,9 @@ public class Main extends JFrame {
 						else {	
 							e.printStackTrace();
 						}
+					}
+					catch (Exception e) {
+						e.printStackTrace();
 					}
 				}	
 				else
