@@ -7,12 +7,14 @@ import org.bff.javampd.events.PlaylistBasicChangeEvent;
 import org.bff.javampd.events.PlaylistBasicChangeListener;
 import org.bff.javampd.events.TrackPositionChangeEvent;
 import org.bff.javampd.events.TrackPositionChangeListener;
+import org.bff.javampd.events.VolumeChangeEvent;
+import org.bff.javampd.events.VolumeChangeListener;
 import org.bff.javampd.monitor.MPDStandAloneMonitor;
 
 
 
 public class MPDChangeListener implements TrackPositionChangeListener,
-PlayerBasicChangeListener, PlaylistBasicChangeListener {
+PlayerBasicChangeListener, PlaylistBasicChangeListener, VolumeChangeListener {
 	
 	private Thread th;
 	private Main mainProgramUI;
@@ -24,6 +26,7 @@ PlayerBasicChangeListener, PlaylistBasicChangeListener {
         mpdStandAloneMonitor.addTrackPositionChangeListener(this);
         mpdStandAloneMonitor.addPlaylistChangeListener(this);
         mpdStandAloneMonitor.addPlayerChangeListener(this);
+        mpdStandAloneMonitor.addVolumeChangeListener(this);
         th = new Thread(mpdStandAloneMonitor,"Stand_Alone_Monitor_Thread");
         th.start();
     }
@@ -32,6 +35,11 @@ PlayerBasicChangeListener, PlaylistBasicChangeListener {
 		mpdStandAloneMonitor.removePlayerChangeListener(this);
 		mpdStandAloneMonitor.removePlaylistStatusChangedListener(this);
 		mpdStandAloneMonitor.stop();
+	}
+	
+	@Override
+	public void volumeChanged(VolumeChangeEvent event) {
+		mainProgramUI.setVolumeSlider(event.getVolume());
 	}
 	
 	@Override

@@ -64,6 +64,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTable;
 
 import java.awt.GridLayout;
+import javax.swing.JSlider;
 
 public class Main extends JFrame {
 
@@ -120,6 +121,7 @@ public class Main extends JFrame {
 	private JButton btnUpdateServerDatabase;
 	private JButton btnLoop;
 	private JProgressBar progbarSongTime;
+	private JSlider sliderVolume;
 	private JTabbedPane tabbedPaneMain;
 	private JTable tblOutputs;
 	private MPDChangeListener changeListener;
@@ -248,10 +250,18 @@ public class Main extends JFrame {
 				e.printStackTrace();
 			} catch (MPDConnectionException e) {
 				e.printStackTrace();
-			}
+			} 
 			
 			//fill in the MPD outputs table
 			initOutputsTable();
+			
+			try {
+				sliderVolume.setValue(player.getVolume());
+			} catch (Exception e) {
+				//e.printStackTrace();
+				sliderVolume.setValue(0);
+			}
+
 		}
 	}
 	
@@ -289,6 +299,12 @@ public class Main extends JFrame {
 		lblElapsedTime.setText(convertTimeInSecondsToString(elapsedSeconds));
 
 	}
+
+	
+	public void setVolumeSlider(int volume) {
+		sliderVolume.setValue(volume);
+	}
+	
 	
 	private void setUpPlaylistEditorListBox() {
 		try {
@@ -890,9 +906,9 @@ public class Main extends JFrame {
 		tabbedPaneMain.setEnabledAt(0, true);
 		GridBagLayout gbl_pnlPlayer = new GridBagLayout();
 		gbl_pnlPlayer.columnWidths = new int[]{300, 125, 0};
-		gbl_pnlPlayer.rowHeights = new int[]{16, 300, 35, 0, 0, 11, 0};
+		gbl_pnlPlayer.rowHeights = new int[]{16, 300, 35, 0, 0, 0, 11, 0};
 		gbl_pnlPlayer.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_pnlPlayer.rowWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_pnlPlayer.rowWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		pnlPlayer.setLayout(gbl_pnlPlayer);
 		
 		JLabel lblNowPlaying = new JLabel("Now Playing");
@@ -1090,7 +1106,7 @@ public class Main extends JFrame {
 		
 		JPanel pnlPlayerButtons = new JPanel();
 		GridBagConstraints gbc_pnlPlayerButtons = new GridBagConstraints();
-		gbc_pnlPlayerButtons.insets = new Insets(0, 0, 5, 0);
+		gbc_pnlPlayerButtons.insets = new Insets(0, 0, 5, 5);
 		gbc_pnlPlayerButtons.fill = GridBagConstraints.VERTICAL;
 		gbc_pnlPlayerButtons.gridx = 0;
 		gbc_pnlPlayerButtons.gridy = 2;
@@ -1148,7 +1164,7 @@ public class Main extends JFrame {
 		
 		JPanel pnlPlayerButtonsLower = new JPanel();
 		GridBagConstraints gbc_pnlPlayerButtonsLower = new GridBagConstraints();
-		gbc_pnlPlayerButtonsLower.insets = new Insets(0, 0, 5, 0);
+		gbc_pnlPlayerButtonsLower.insets = new Insets(0, 0, 5, 5);
 		gbc_pnlPlayerButtonsLower.gridx = 0;
 		gbc_pnlPlayerButtonsLower.gridy = 3;
 		pnlPlayer.add(pnlPlayerButtonsLower, gbc_pnlPlayerButtonsLower);
@@ -1226,12 +1242,33 @@ public class Main extends JFrame {
 		gbc_btnShuffle.gridy = 0;
 		pnlPlayerButtonsLower.add(btnShuffle, gbc_btnShuffle);
 		
+		sliderVolume = new JSlider(JSlider.HORIZONTAL,0,100,100);
+		sliderVolume.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				try {
+					player.setVolume(sliderVolume.getValue());
+				} catch (MPDResponseException e) {
+					sliderVolume.setValue(0);					
+				} catch (Exception e) {
+					sliderVolume.setValue(0);
+				}
+			}
+		});
+		sliderVolume.setToolTipText("Volume");
+		GridBagConstraints gbc_sliderVolume = new GridBagConstraints();
+		gbc_sliderVolume.fill = GridBagConstraints.HORIZONTAL;
+		gbc_sliderVolume.insets = new Insets(0, 0, 5, 5);
+		gbc_sliderVolume.gridx = 0;
+		gbc_sliderVolume.gridy = 4;
+		pnlPlayer.add(sliderVolume, gbc_sliderVolume);
+		
 		JPanel pnlTimeLabels = new JPanel();
 		GridBagConstraints gbc_pnlTimeLabels = new GridBagConstraints();
-		gbc_pnlTimeLabels.insets = new Insets(0, 0, 0, 5);
+		gbc_pnlTimeLabels.insets = new Insets(0, 0, 5, 5);
 		gbc_pnlTimeLabels.fill = GridBagConstraints.HORIZONTAL;
 		gbc_pnlTimeLabels.gridx = 0;
-		gbc_pnlTimeLabels.gridy = 4;
+		gbc_pnlTimeLabels.gridy = 5;
 		pnlPlayer.add(pnlTimeLabels, gbc_pnlTimeLabels);
 		pnlTimeLabels.setLayout(new GridLayout(0, 2, 0, 0));
 		
@@ -1282,7 +1319,7 @@ public class Main extends JFrame {
 		gbc_progbarSongTime.insets = new Insets(0, 0, 0, 5);
 		gbc_progbarSongTime.fill = GridBagConstraints.HORIZONTAL;
 		gbc_progbarSongTime.gridx = 0;
-		gbc_progbarSongTime.gridy = 5;
+		gbc_progbarSongTime.gridy = 6;
 		pnlPlayer.add(progbarSongTime, gbc_progbarSongTime);
 
 		
