@@ -31,8 +31,8 @@ public class Options implements java.io.Serializable {
                 this.server = tempOptions.getServer();
                 this.port = tempOptions.getPort();
                 this.password = tempOptions.getPassword();
+                obj_in.close();
             }
-            //obj_in.close();
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -40,7 +40,7 @@ public class Options implements java.io.Serializable {
             this.server = null;
             this.port = 6600;
             this.password = null;
-        }		
+        }
 	}
 	
 	
@@ -49,7 +49,7 @@ public class Options implements java.io.Serializable {
             FileOutputStream f_out = new FileOutputStream("AJMPDControlOptions.data");
             ObjectOutputStream obj_out = new ObjectOutputStream (f_out);
             obj_out.writeObject(this);
-            //obj_out.close();
+            obj_out.close();
         }
         catch (FileNotFoundException fe) {
             System.out.println(fe.getMessage());
