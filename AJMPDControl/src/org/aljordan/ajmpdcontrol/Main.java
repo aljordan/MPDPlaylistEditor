@@ -30,6 +30,7 @@ import javax.swing.border.LineBorder;
 
 import java.awt.Color;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -73,7 +74,7 @@ public class Main extends JFrame {
 	private MPDGenre currentGenre;  //Used to see if and which genre is selected
 	private MPDPlayer player;  // MPD player to control playback.
 	private MPDPlaylist initialMPDPlaylist; // store the currently playing MPD playlist;
-	private enum ListView {ARTIST, ALBUM, SONG}; // Used to track which view group radio button has been pressed 
+	private enum ListView {ARTIST, ALBUM, SONG} // Used to track which view group radio button has been pressed
 	private ListView currentListView; // See ListView enum notes
 	private Options options; // Contains MPD Server information
 	private JavaMPDWrapper library; // The tool that allows to get out music from MPD.
@@ -94,12 +95,12 @@ public class Main extends JFrame {
 	private JLabel lblTotalTime;
 	private final ButtonGroup btnGrpLetterSelection = new ButtonGroup();
 	private final ButtonGroup btnGroupArtistsAlbumsSongs = new ButtonGroup();
-	private JList lstGenres;
-	private JList lstArtists;
-	private JList lstAlbums;
-	private JList lstSongs;
-	private JList lstPlaylist;
-	private JList lstNowPlaying;
+	private JList<MPDGenre> lstGenres;
+	private JList<MPDArtist> lstArtists;
+	private JList<MPDAlbum> lstAlbums;
+	private JList<MPDSong> lstSongs;
+	private JList<MPDSong> lstPlaylist;
+	private JList<MPDSong> lstNowPlaying;
 	private JScrollPane scrollPaneGenres;
 	private JScrollPane scrollPaneArtists;
 	private JScrollPane scrollPaneAlbums;
@@ -223,7 +224,8 @@ public class Main extends JFrame {
 	private void initComponentsFromLibrary() {
 		if (library != null && library.isConnectedToMPD()) {
 			Collection<MPDGenre> genres = library.getGenres();
-			lstGenres = new JList(genres.toArray());
+//			lstGenres = new JList(genres.toArray());
+			lstGenres = new JList<MPDGenre>(genres.toArray(new MPDGenre[genres.size()]));
 			scrollPaneGenres.setViewportView(lstGenres);
 			lstGenres.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			
@@ -288,9 +290,8 @@ public class Main extends JFrame {
 			seconds = "0" + Integer.toString(time % 60);
 		else
 			seconds = Integer.toString(time % 60);
-			
-		String totalTime = minutes + ":" + seconds;
-		return totalTime;
+
+		return minutes + ":" + seconds;
 		
 	}
 	
@@ -309,13 +310,12 @@ public class Main extends JFrame {
 	private void setUpPlaylistEditorListBox() {
 		try {
 			// model for drag and drop list box
-		    DefaultListModel model = new DefaultListModel();
-			for (Object o : initialMPDPlaylist.getSongList().toArray()) {
-				model.addElement(o);
-			}
+		    DefaultListModel<MPDSong> model = new DefaultListModel<MPDSong>();
+			for (MPDSong s : initialMPDPlaylist.getSongList().toArray(new MPDSong[initialMPDPlaylist.getSongList().size()]))
+				model.addElement(s);
 
 			// load play list into play list editor
-			lstPlaylist = new JList(model);
+			lstPlaylist = new JList<MPDSong>(model);
 		    MouseAdapter listener = new ReorderListener(lstPlaylist, initialMPDPlaylist);
 		    lstPlaylist.addMouseListener(listener);
 		    lstPlaylist.addMouseMotionListener(listener);
@@ -453,7 +453,7 @@ public class Main extends JFrame {
 		
 	public void updatePlayingNowList() {
 		try {
-			lstNowPlaying = new JList(initialMPDPlaylist.getSongList().toArray());
+			lstNowPlaying = new JList<MPDSong>(initialMPDPlaylist.getSongList().toArray(new MPDSong[initialMPDPlaylist.getSongList().size()]));
 		    lstNowPlaying.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			lstNowPlaying.addMouseListener(new MouseAdapter() {
 				@Override
@@ -596,7 +596,7 @@ public class Main extends JFrame {
     }
     
     private void updateArtistList() {
-    	Collection<MPDArtist> artists = null;
+    	Collection<MPDArtist> artists;
     	if (currentLetter.equalsIgnoreCase("all")) {
     		if (currentGenre != null) {
     			artists = library.getArtistsByGenre(currentGenre);
@@ -613,7 +613,7 @@ public class Main extends JFrame {
     			artists = library.getArtistsStartingWith(currentLetter);
     		}
     	}
-	    lstArtists = new JList(artists.toArray());
+	    lstArtists = new JList<MPDArtist>(artists.toArray(new MPDArtist[artists.size()]));
 	    scrollPaneArtists.setViewportView(lstArtists);
 	    lstArtists.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	    lstArtists.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -623,14 +623,14 @@ public class Main extends JFrame {
 	    });
 	    
 	    // Empty out Album list and song list
-	    lstAlbums = new JList();
+	    lstAlbums = new JList<MPDAlbum>();
 	    scrollPaneAlbums.setViewportView(lstAlbums);
-	    lstSongs = new JList();
+	    lstSongs = new JList<MPDSong>();
 	    scrollPaneSongs.setViewportView(lstSongs);
     }
     
     private void updateAlbumList() {
-    	Collection<MPDAlbum> albums = null;
+    	Collection<MPDAlbum> albums;
     	if (currentLetter.equalsIgnoreCase("all")) {
     		if (currentGenre != null) {
     			albums = library.getAlbumsByGenre(currentGenre);
@@ -647,7 +647,7 @@ public class Main extends JFrame {
     			albums = library.getAlbumsStartingWith(currentLetter);
     		}
     	}
-	    lstAlbums = new JList(albums.toArray());
+	    lstAlbums = new JList<MPDAlbum>(albums.toArray(new MPDAlbum[albums.size()]));
 	    scrollPaneAlbums.setViewportView(lstAlbums);
 	    lstAlbums.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	    lstAlbums.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -656,14 +656,14 @@ public class Main extends JFrame {
 	        }
 	    });    	
 	    // Empty out Artists list and songs list
-	    lstArtists = new JList();
+	    lstArtists = new JList<MPDArtist>();
 	    scrollPaneArtists.setViewportView(lstArtists);
-	    lstSongs = new JList();
+	    lstSongs = new JList<MPDSong>();
 	    scrollPaneSongs.setViewportView(lstSongs);
     }
 
     private void updateSongList() {
-    	Collection<MPDSong> songs = null;
+    	Collection<MPDSong> songs;
     	if (currentLetter.equalsIgnoreCase("all")) {
     		if (currentGenre != null) {
     			songs = library.getSongsByGenre(currentGenre);
@@ -680,7 +680,7 @@ public class Main extends JFrame {
     			songs = library.getSongsStartingWith(currentLetter);
     		}
     	}
-	    lstSongs = new JList(songs.toArray());
+	    lstSongs = new JList<MPDSong>(songs.toArray(new MPDSong[songs.size()]));
 		lstSongs.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -694,9 +694,9 @@ public class Main extends JFrame {
 	    scrollPaneSongs.setViewportView(lstSongs);
 	    lstSongs.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	    // Empty out Artists list and Albums list
-	    lstArtists = new JList();
+	    lstArtists = new JList<MPDArtist>();
 	    scrollPaneArtists.setViewportView(lstArtists);
-	    lstAlbums = new JList();
+	    lstAlbums = new JList<MPDAlbum>();
 	    scrollPaneAlbums.setViewportView(lstAlbums);    	
     }
     
@@ -764,7 +764,7 @@ public class Main extends JFrame {
 	    MPDArtist artist = (MPDArtist)artistList.getSelectedValue();
 	
 	    Collection<MPDAlbum> albums = library.getAlbumsByArtist(artist);
-	    lstAlbums = new JList(albums.toArray());
+	    lstAlbums = new JList<MPDAlbum>(albums.toArray(new MPDAlbum[albums.size()]));
 	    scrollPaneAlbums.setViewportView(lstAlbums);
 	    lstAlbums.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	    lstAlbums.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -773,7 +773,7 @@ public class Main extends JFrame {
 	        }
 	    });
 	    // Clean out Song list
-	    lstSongs = new JList();
+	    lstSongs = new JList<MPDSong>();
 	    scrollPaneSongs.setViewportView(lstSongs);
     }                                      
 
@@ -786,7 +786,7 @@ public class Main extends JFrame {
 	    MPDAlbum album = (MPDAlbum)albumList.getSelectedValue();
 	
 	    Collection<MPDSong> songs = library.getSongsByAlbum(album);
-	    lstSongs = new JList(songs.toArray());
+	    lstSongs = new JList<MPDSong>(songs.toArray(new MPDSong[songs.size()]));
 		lstSongs.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -884,7 +884,7 @@ public class Main extends JFrame {
 		gbl_contentPane.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_contentPane.rowWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
 		contentPane.setLayout(gbl_contentPane);
-		lstPlaylist = new JList();
+		lstPlaylist = new JList<MPDSong>();
 		lstPlaylist.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		lstPlaylist.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
 		    public void valueChanged(javax.swing.event.ListSelectionEvent e) {
@@ -928,7 +928,7 @@ public class Main extends JFrame {
 		gbc_scrollPaneNowPlaying.gridy = 1;
 		pnlPlayer.add(scrollPaneNowPlaying, gbc_scrollPaneNowPlaying);
 		
-		lstNowPlaying = new JList();
+		lstNowPlaying = new JList<MPDSong>();
 		lstNowPlaying.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -1289,8 +1289,7 @@ public class Main extends JFrame {
 			private static final long serialVersionUID = 1L;
 
 			public JToolTip createToolTip() {
-				JToolTip tip = super.createToolTip();
-		        return tip;
+				return super.createToolTip();
 		    }
 			
 			public boolean contains(int x, int y) {
@@ -1794,7 +1793,7 @@ public class Main extends JFrame {
 		gbc_scrollPaneGenres.gridy = 0;
 		pnlGenres.add(scrollPaneGenres, gbc_scrollPaneGenres);
 		
-		lstGenres = new JList();
+		lstGenres = new JList<MPDGenre>();
 		lstGenres.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent arg0) {
 				lstGenresValueChanged(arg0);
@@ -1854,7 +1853,7 @@ public class Main extends JFrame {
 		gbc_scrollPaneArtists.gridy = 1;
 		pnlLowerPlaylist.add(scrollPaneArtists, gbc_scrollPaneArtists);
 		
-		lstArtists = new JList();
+		lstArtists = new JList<MPDArtist>();
 		lstArtists.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPaneArtists.setViewportView(lstArtists);
 		
@@ -1868,7 +1867,7 @@ public class Main extends JFrame {
 		gbc_scrollPaneAlbums.gridy = 1;
 		pnlLowerPlaylist.add(scrollPaneAlbums, gbc_scrollPaneAlbums);
 		
-		lstAlbums = new JList();
+		lstAlbums = new JList<MPDAlbum>();
 		lstAlbums.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPaneAlbums.setViewportView(lstAlbums);
 		
@@ -1882,7 +1881,7 @@ public class Main extends JFrame {
 		gbc_scrollPaneSongs.gridy = 1;
 		pnlLowerPlaylist.add(scrollPaneSongs, gbc_scrollPaneSongs);
 		
-		lstSongs = new JList();
+		lstSongs = new JList<MPDSong>();
 		lstSongs.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -1914,10 +1913,11 @@ public class Main extends JFrame {
 		btnAdd.setToolTipText("Add songs to playlist");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			    Object[] selectedSongs = lstSongs.getSelectedValues();
-			    for (Object o : selectedSongs) {
+			    //Object[] selectedSongs = lstSongs.getSelectedValues();
+				List<MPDSong> selectedSongs = lstSongs.getSelectedValuesList();
+			    for (MPDSong s : selectedSongs) {
 			    	try {
-						initialMPDPlaylist.addSong((MPDSong) o);
+						initialMPDPlaylist.addSong(s);
 					} catch (MPDPlaylistException e1) {
 						e1.printStackTrace();
 					} catch (MPDConnectionException e1) {
@@ -1941,10 +1941,11 @@ public class Main extends JFrame {
 		btnRemove.setToolTipText("Remove songs from playlist");
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			    Object[] objs = lstPlaylist.getSelectedValues();
-			    for (Object o : objs) {
+			    List<MPDSong> songs = lstPlaylist.getSelectedValuesList();
+			    for (MPDSong song : songs) {
 			    	try {
-						initialMPDPlaylist.removeSong((MPDSong) o);
+						initialMPDPlaylist.removeSong(song);
+						//TODO: Scroll to nearby song in playlist list
 					} catch (MPDPlaylistException e1) {
 						e1.printStackTrace();
 					} catch (MPDConnectionException e1) {
@@ -1979,7 +1980,7 @@ public class Main extends JFrame {
 		gbc_scrollPanePlaylist.gridy = 1;
 		pnlLowerPlaylist.add(scrollPanePlaylist, gbc_scrollPanePlaylist);
 		
-		lstPlaylist = new JList();
+		lstPlaylist = new JList<MPDSong>();
 		lstPlaylist.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 				lstPlaylistValueChanged(e);
@@ -2056,7 +2057,7 @@ public class Main extends JFrame {
 					catch (MPDResponseException e) {
 						// does the play list already saved on the server?  
 						// If so, delete and re-save
-						if (e.getMessage().indexOf("Playlist already exists") > -1 ) {
+						if (e.getMessage().contains("Playlist already exists")) {
 							try {
 								int overwrite = JOptionPane.showConfirmDialog(null,
 								    "Playlist already exists. Overwrite?",

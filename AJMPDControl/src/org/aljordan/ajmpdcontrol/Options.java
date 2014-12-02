@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 
 public class Options implements java.io.Serializable {
 	/**
@@ -36,7 +37,7 @@ public class Options implements java.io.Serializable {
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
-            System.out.println(e.getStackTrace());
+            System.out.println(Arrays.toString(e.getStackTrace()));
             this.server = "localhost";
             this.port = 6600;
             this.password = null;
@@ -53,11 +54,11 @@ public class Options implements java.io.Serializable {
         }
         catch (FileNotFoundException fe) {
             System.out.println(fe.getMessage());
-            System.out.println(fe.getStackTrace());
+            System.out.println(Arrays.toString(fe.getStackTrace()));
         }
         catch (IOException ioe) {
             System.out.println(ioe.getMessage());
-            System.out.println(ioe.getStackTrace());
+            System.out.println(Arrays.toString(ioe.getStackTrace()));
         }
     }
 	

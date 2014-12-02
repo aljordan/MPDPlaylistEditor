@@ -9,15 +9,16 @@ import javax.swing.JList;
 import org.bff.javampd.MPDPlaylist;
 import org.bff.javampd.exception.MPDConnectionException;
 import org.bff.javampd.exception.MPDPlaylistException;
+import org.bff.javampd.objects.MPDSong;
 
 class ReorderListener extends MouseAdapter {
 
-	private JList<Object> list;
+	private JList<MPDSong> list;
 	private int pressIndex = 0;
 	private int releaseIndex = 0;
 	private MPDPlaylist playlist;
 
-	public ReorderListener(JList<Object> list, MPDPlaylist pList) {
+	public ReorderListener(JList<MPDSong> list, MPDPlaylist pList) {
 		if (!(list.getModel() instanceof DefaultListModel)) {
 			throw new IllegalArgumentException(
 					"List must have a DefaultListModel");
@@ -46,17 +47,15 @@ class ReorderListener extends MouseAdapter {
 	}
 
 	private void reorder() {
-		DefaultListModel<Object> model = (DefaultListModel<Object>) list.getModel();
-		Object dragee = model.elementAt(pressIndex);
+		DefaultListModel<MPDSong> model = (DefaultListModel<MPDSong>) list.getModel();
+		MPDSong dragee = model.elementAt(pressIndex);
 		model.removeElementAt(pressIndex);
 		model.insertElementAt(dragee, releaseIndex);
 		try {
 			playlist.move(playlist.getSongList().get(pressIndex), releaseIndex);
 		} catch (MPDPlaylistException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MPDConnectionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

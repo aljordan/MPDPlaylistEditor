@@ -1,10 +1,7 @@
 package org.aljordan.ajmpdcontrol;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.bff.javampd.*;
 import org.bff.javampd.exception.*;
@@ -220,7 +217,7 @@ public class JavaMPDWrapper {
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
+			System.out.println(Arrays.toString(e.getStackTrace()));
 		}
 		return playlist;		
 	}
@@ -232,7 +229,7 @@ public class JavaMPDWrapper {
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
+			System.out.println(Arrays.toString(e.getStackTrace()));
 		}
 		return playlist;
 	}
