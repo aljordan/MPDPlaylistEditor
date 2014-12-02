@@ -2,6 +2,7 @@ package org.aljordan.ajmpdcontrol;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
@@ -11,12 +12,12 @@ import org.bff.javampd.exception.MPDPlaylistException;
 
 class ReorderListener extends MouseAdapter {
 
-	private JList list;
+	private JList<Object> list;
 	private int pressIndex = 0;
 	private int releaseIndex = 0;
 	private MPDPlaylist playlist;
 
-	public ReorderListener(JList list, MPDPlaylist pList) {
+	public ReorderListener(JList<Object> list, MPDPlaylist pList) {
 		if (!(list.getModel() instanceof DefaultListModel)) {
 			throw new IllegalArgumentException(
 					"List must have a DefaultListModel");
@@ -45,7 +46,7 @@ class ReorderListener extends MouseAdapter {
 	}
 
 	private void reorder() {
-		DefaultListModel model = (DefaultListModel) list.getModel();
+		DefaultListModel<Object> model = (DefaultListModel<Object>) list.getModel();
 		Object dragee = model.elementAt(pressIndex);
 		model.removeElementAt(pressIndex);
 		model.insertElementAt(dragee, releaseIndex);
