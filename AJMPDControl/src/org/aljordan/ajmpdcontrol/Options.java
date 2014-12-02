@@ -37,7 +37,7 @@ public class Options implements java.io.Serializable {
         catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println(e.getStackTrace());
-            this.server = null;
+            this.server = "localhost";
             this.port = 6600;
             this.password = null;
         }
