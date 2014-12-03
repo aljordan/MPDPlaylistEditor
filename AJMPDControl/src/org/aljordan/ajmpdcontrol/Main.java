@@ -654,7 +654,24 @@ public class Main extends JFrame {
 	        public void valueChanged(javax.swing.event.ListSelectionEvent arg0) {
 	            lstAlbumsValueChanged(arg0);
 	        }
-	    });    	
+	    });
+	    //double click on album adds all songs to play list
+	    lstAlbums.addMouseListener(new MouseAdapter() {
+	    	@Override
+	    	public void mouseClicked(MouseEvent e) {
+	    		if (e.getClickCount() == 2) {
+	    		    int start = 0;
+	    		    int end = lstSongs.getModel().getSize() - 1;
+	    		    if (end >= 0) {
+	    		      lstSongs.setSelectionInterval(start, end);
+	    		    }
+			        btnAdd.doClick();
+			        lstSongs.clearSelection();
+	    		}
+	    	}
+	    });
+
+	    
 	    // Empty out Artists list and songs list
 	    lstArtists = new JList<MPDArtist>();
 	    scrollPaneArtists.setViewportView(lstArtists);
@@ -760,8 +777,8 @@ public class Main extends JFrame {
         if (evt.getValueIsAdjusting()) {
         	return;
 	    }
-	    JList artistList = (JList)evt.getSource();
-	    MPDArtist artist = (MPDArtist)artistList.getSelectedValue();
+	    JList<MPDArtist> artistList = (JList<MPDArtist>)evt.getSource();
+	    MPDArtist artist = artistList.getSelectedValue();
 	
 	    Collection<MPDAlbum> albums = library.getAlbumsByArtist(artist);
 	    lstAlbums = new JList<MPDAlbum>(albums.toArray(new MPDAlbum[albums.size()]));
@@ -771,7 +788,23 @@ public class Main extends JFrame {
 	        public void valueChanged(javax.swing.event.ListSelectionEvent arg0) {
 	            lstAlbumsValueChanged(arg0);
 	        }
+	    });    
+	    //double click on album adds all songs to play list
+	    lstAlbums.addMouseListener(new MouseAdapter() {
+	    	@Override
+	    	public void mouseClicked(MouseEvent e) {
+	    		if (e.getClickCount() == 2) {
+	    		    int start = 0;
+	    		    int end = lstSongs.getModel().getSize() - 1;
+	    		    if (end >= 0) {
+	    		      lstSongs.setSelectionInterval(start, end);
+	    		    }
+			        btnAdd.doClick();
+			        lstSongs.clearSelection();
+	    		}
+	    	}
 	    });
+	    
 	    // Clean out Song list
 	    lstSongs = new JList<MPDSong>();
 	    scrollPaneSongs.setViewportView(lstSongs);

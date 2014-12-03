@@ -69,7 +69,7 @@ public class JavaMPDWrapper {
 			return String.valueOf(info.getSampleRate());
 		}
 		catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				return "";
 			}
 	}
@@ -81,7 +81,7 @@ public class JavaMPDWrapper {
 			return String.valueOf(info.getBits());
 		}
 		catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				return "";
 			}
 	}
@@ -274,9 +274,13 @@ public class JavaMPDWrapper {
 		List<MPDSong> filteredSongs = new ArrayList<MPDSong>();
 		try {
 	        for (MPDSong song : coll) {
-	        	String name = song.getName().toLowerCase();
-	        	if (name.startsWith(letter.toLowerCase())) {
-        			filteredSongs.add(song);
+	        	try {
+		        	String name = song.getName().toLowerCase();
+		        	if (name.startsWith(letter.toLowerCase()))
+	        			filteredSongs.add(song);
+	        	} catch (NullPointerException npe) {
+	        		//do nothing since we can't do anything about songs with no names.
+	        		//npe.printStackTrace();
 	        	}
 	        }
 	        Collections.sort(filteredSongs);
