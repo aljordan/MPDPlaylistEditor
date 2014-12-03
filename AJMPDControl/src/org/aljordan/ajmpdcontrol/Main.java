@@ -1332,9 +1332,11 @@ public class Main extends JFrame {
 					if (ps == PlayerStatus.STATUS_PLAYING) 
 						isPlaying = true;
 				} catch (MPDResponseException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				} catch (MPDConnectionException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
+				} catch (NullPointerException e) {
+					//e.printStackTrace();
 				}
 				
 				if (isPlaying) {
