@@ -463,7 +463,12 @@ public class JavaMPDWrapper {
 			System.out.println("Could not connect to MPD server");
 			e.printStackTrace();
 			return "Connection failed: Unknown Host";
+		} catch (NullPointerException e) {
+			System.out.println("Could not connect to MPD server");
+			e.printStackTrace();
+			return "Connection failed: Unknown Host";
 		}
+
 	}
 
 	/**
